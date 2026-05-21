@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db:
+    image: mongo:latest
+    container_name: lms-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - lms-db-data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lms-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://db:27017/enterprise_lms
+      - JWT_ACCESS_SECRET=super_secret_access_key_123_456_789_abc_def_xyz
+      - JWT_REFRESH_SECRET=super_secret_refresh_key_987_654_321_zyx_wvu_tsr
+      - JWT_ACCESS_EXPIRY=15m
+      - JWT_REFRESH_EXPIRY=7d
+      - CLOUDINARY_CLOUD_NAME=mock_cloud
+      - CLOUDINARY_API_KEY=mock_key
+      - CLOUDINARY_API_SECRET=mock_secret
+      - CORS_ORIGIN=http://localhost:3000
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lms-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  lms-db-data:
