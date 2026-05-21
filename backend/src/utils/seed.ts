@@ -241,6 +241,133 @@ Raft decomposes consensus into three subproblems:
     order: 2,
   });
 
+  // Quiz for Course 2
+  await Quiz.create({
+    course: course2._id,
+    module: c2m1._id,
+    title: 'Distributed Systems Foundations Quiz',
+    description: 'Test your understanding of CAP, PACELC, and database sharding techniques.',
+    passingScore: 70,
+    questions: [
+      {
+        questionText: 'What does the P stand for in CAP theorem?',
+        options: [
+          'Performance',
+          'Partition Tolerance',
+          'Persistence',
+          'Privacy',
+        ],
+        correctOptionIndex: 1,
+        explanation: 'The CAP theorem states that a distributed data store can simultaneously provide at most two out of three guarantees: Consistency, Availability, and Partition Tolerance (P).',
+      },
+      {
+        questionText: 'According to PACELC, if there is NO partition (E), what trade-off must a system make?',
+        options: [
+          'Latency (L) vs Consistency (C)',
+          'Availability (A) vs Consistency (C)',
+          'Security vs Cost',
+          'Speed vs Size',
+        ],
+        correctOptionIndex: 0,
+        explanation: 'PACELC states that in the absence of partitions (E), the system must choose between Latency (L) and Consistency (C).',
+      },
+    ],
+  });
+
+  // Create Course 3
+  console.log('Creating Course 3...');
+  const course3 = await Course.create({
+    title: 'Introduction to Cloud-Native DevOps',
+    subtitle: 'Unlock the power of Docker, Kubernetes, CI/CD pipelines, and cloud monitoring.',
+    description: 'A beginner-friendly entry into the DevOps space. Learn containerization isolation, multi-stage compilation, Kubernetes orchestration architectures, and Prometheus telemetry metrics tracking.',
+    instructor: instructor._id,
+    category: 'DevOps',
+    level: 'beginner',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?q=80&w=640&auto=format&fit=crop',
+    tags: ['Docker', 'Kubernetes', 'Cloud', 'DevOps'],
+    status: 'published',
+  });
+
+  // Course 3 - Module 1
+  const c3m1 = await Module.create({
+    course: course3._id,
+    title: 'Containerization Foundations',
+    order: 1,
+  });
+
+  await Lesson.create({
+    module: c3m1._id,
+    course: course3._id,
+    title: 'Understanding Container Namespaces & Cgroups',
+    description: 'Deconstructing underlying linux primitives that enable containerization.',
+    type: 'video',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-monitor-screen-of-a-developer-running-code-41873-large.mp4',
+    duration: 20,
+    order: 1,
+  });
+
+  await Lesson.create({
+    module: c3m1._id,
+    course: course3._id,
+    title: 'Efficient Multi-Stage Dockerfile Compilation',
+    description: 'Minimizing image size and hardening security parameters.',
+    type: 'text',
+    content: `Step-by-step documentation on decoupling build nodes from release binaries. We compile clean Next.js/Express builds and serve them inside hardened non-root containers.`,
+    duration: 11,
+    order: 2,
+  });
+
+  // Course 3 - Module 2
+  const c3m2 = await Module.create({
+    course: course3._id,
+    title: 'Orchestration with Kubernetes',
+    order: 2,
+  });
+
+  await Lesson.create({
+    module: c3m2._id,
+    course: course3._id,
+    title: 'Kubernetes Cluster Anatomy & Architecture',
+    description: 'Master control planes, worker nodes, Kube-Proxy, and ETCD state logs.',
+    type: 'pdf',
+    pdfUrl: 'https://pdfobject.com/pdf/sample.pdf',
+    duration: 25,
+    order: 1,
+  });
+
+  // Quiz for Course 3
+  await Quiz.create({
+    course: course3._id,
+    module: c3m1._id,
+    title: 'Cloud-Native Containerization Assessment',
+    description: 'Validate your grasp of Docker isolation, cgroups, and namespaces.',
+    passingScore: 70,
+    questions: [
+      {
+        questionText: 'Which kernel primitive limits the resource utilization (CPU, memory) of a container?',
+        options: [
+          'Namespaces',
+          'Control Groups (cgroups)',
+          'Chroot',
+          'UnionFS',
+        ],
+        correctOptionIndex: 1,
+        explanation: 'Control groups (cgroups) are a Linux kernel feature that limits, accounts for, and isolates the resource usage of a collection of processes.',
+      },
+      {
+        questionText: 'What is the primary benefit of multi-stage Docker builds?',
+        options: [
+          'Caching build logs',
+          'Faster local dev runs',
+          'Smaller production image sizes by separating compile-time dependencies',
+          'Avoiding Docker configurations entirely',
+        ],
+        correctOptionIndex: 2,
+        explanation: 'Multi-stage builds permit you to compile your code in an intermediate image containing compile-time tools, and copy only the final release binary to a tiny release-only image.',
+      },
+    ],
+  });
+
   // Create an enrollment and some progress for the student in Course 1
   console.log('Creating sample enrollment for Student...');
   const enrollment = await Enrollment.create({
@@ -273,3 +400,4 @@ seedDatabase().catch((err) => {
   console.error('Seeding encountered an error:', err);
   process.exit(1);
 });
+
