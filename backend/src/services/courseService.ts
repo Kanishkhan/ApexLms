@@ -5,6 +5,16 @@ import { enrollmentRepository } from '../repositories/enrollmentRepository';
 import { progressRepository } from '../repositories/progressRepository';
 import { NotFoundError, BadRequestError } from '../utils/customErrors';
 
+const getInstructorIdStr = (instructorField: any): string => {
+  if (!instructorField) return '';
+  if (typeof instructorField === 'string') return instructorField;
+  if (typeof instructorField === 'object') {
+    if (instructorField._id) return String(instructorField._id);
+    if (instructorField.id) return String(instructorField.id);
+  }
+  return String(instructorField);
+};
+
 export class CourseService {
   async getCourses(filters: any = {}): Promise<any[]> {
     const query: any = { status: 'published' };
@@ -83,38 +93,46 @@ export class CourseService {
     });
   }
 
-  async updateCourse(courseId: string, instructorId: string, courseData: any): Promise<any> {
+  async updateCourse(courseId: string, instructorId: string, courseData: any, role?: string): Promise<any> {
     const course = await courseRepository.findById(courseId);
     if (!course) throw new NotFoundError('Course not found');
     
-    // Check ownership
-    const instId = course.instructor._id ? String(course.instructor._id) : String(course.instructor);
-    if (instId !== instructorId) {
-      throw new BadRequestError('You do not own this course');
+    // Check ownership (bypassed for admin)
+    if (role !== 'admin') {
+      const instId = getInstructorIdStr(course.instructor);
+      if (instId !== instructorId) {
+        throw new BadRequestError('You do not own this course');
+      }
     }
 
     return courseRepository.update(courseId, courseData);
   }
 
-  async deleteCourse(courseId: string, instructorId: string): Promise<void> {
+  async deleteCourse(courseId: string, instructorId: string, role?: string): Promise<void> {
     const course = await courseRepository.findById(courseId);
     if (!course) throw new NotFoundError('Course not found');
     
-    const instId = course.instructor._id ? String(course.instructor._id) : String(course.instructor);
-    if (instId !== instructorId) {
-      throw new BadRequestError('You do not own this course');
+    // Check ownership (bypassed for admin)
+    if (role !== 'admin') {
+      const instId = getInstructorIdStr(course.instructor);
+      if (instId !== instructorId) {
+        throw new BadRequestError('You do not own this course');
+      }
     }
 
     await courseRepository.delete(courseId);
   }
 
-  async addModule(courseId: string, instructorId: string, moduleData: any): Promise<any> {
+  async addModule(courseId: string, instructorId: string, moduleData: any, role?: string): Promise<any> {
     const course = await courseRepository.findById(courseId);
     if (!course) throw new NotFoundError('Course not found');
 
-    const instId = course.instructor._id ? String(course.instructor._id) : String(course.instructor);
-    if (instId !== instructorId) {
-      throw new BadRequestError('You do not own this course');
+    // Check ownership (bypassed for admin)
+    if (role !== 'admin') {
+      const instId = getInstructorIdStr(course.instructor);
+      if (instId !== instructorId) {
+        throw new BadRequestError('You do not own this course');
+      }
     }
 
     return moduleRepository.create({
@@ -123,16 +141,19 @@ export class CourseService {
     });
   }
 
-  async addLesson(moduleId: string, instructorId: string, lessonData: any): Promise<any> {
+  async addLesson(moduleId: string, instructorId: string, lessonData: any, role?: string): Promise<any> {
     const mod = await moduleRepository.findById(moduleId);
     if (!mod) throw new NotFoundError('Module not found');
 
     const course = await courseRepository.findById(String(mod.course));
     if (!course) throw new NotFoundError('Parent course not found');
 
-    const instId = course.instructor._id ? String(course.instructor._id) : String(course.instructor);
-    if (instId !== instructorId) {
-      throw new BadRequestError('You do not own this course');
+    // Check ownership (bypassed for admin)
+    if (role !== 'admin') {
+      const instId = getInstructorIdStr(course.instructor);
+      if (instId !== instructorId) {
+        throw new BadRequestError('You do not own this course');
+      }
     }
 
     return lessonRepository.create({

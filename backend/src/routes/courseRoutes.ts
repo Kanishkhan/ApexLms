@@ -11,6 +11,7 @@ import {
   addModule,
   addLesson,
   uploadThumbnail,
+  uploadVideo,
   toggleLessonProgress,
   toggleLessonBookmark,
 } from '../controllers/courseController';
@@ -37,5 +38,6 @@ router.delete('/:id', protect, restrictTo('instructor', 'admin'), deleteCourse);
 router.post('/:courseId/modules', protect, restrictTo('instructor', 'admin'), addModule);
 router.post('/modules/:moduleId/lessons', protect, restrictTo('instructor', 'admin'), addLesson);
 router.post('/upload-thumbnail', protect, restrictTo('instructor', 'admin'), upload.single('thumbnail'), uploadThumbnail);
+router.post('/upload-video', protect, restrictTo('instructor', 'admin'), upload.single('video'), uploadVideo);
 
 export default router;

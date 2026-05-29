@@ -13,7 +13,7 @@ export class DiscussionService {
     const rootComments: any[] = [];
 
     discussions.forEach((disc) => {
-      const plainObj = disc.toObject();
+      const plainObj = disc.toObject() as any;
       plainObj.replies = [];
       commentMap.set(plainObj._id.toString(), plainObj);
     });

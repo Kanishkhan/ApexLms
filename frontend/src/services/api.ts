@@ -86,6 +86,12 @@ export const courseService = {
     });
     return res.data;
   },
+  uploadVideo: async (formData: FormData) => {
+    const res = await apiClient.post('/courses/upload-video', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return res.data;
+  },
 };
 
 export const quizService = {

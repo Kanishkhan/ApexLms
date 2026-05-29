@@ -21,7 +21,9 @@ import {
   ClipboardList,
   Compass,
   Bookmark,
-  Award
+  Award,
+  Flame,
+  Timer
 } from 'lucide-react';
 
 interface SidebarItem {
@@ -73,6 +75,8 @@ export default function DashboardLayout() {
         return [
           { label: 'Dashboard Hub', path: '/dashboard', icon: LayoutDashboard },
           { label: 'Enrolled Courses', path: '/dashboard/enrolled', icon: Award },
+          { label: 'AI Speed Code Duel', path: '/coding/arena/duel', icon: Flame },
+          { label: 'Lo-Fi Focus Space', path: '/dashboard/focus', icon: Timer },
           { label: 'Browse Catalog', path: '/courses', icon: Compass },
           { label: 'My Profile Settings', path: '/profile', icon: UserIcon },
         ];

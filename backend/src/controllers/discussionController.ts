@@ -11,9 +11,9 @@ export const getDiscussions = asyncHandler(async (req: AuthenticatedRequest, res
 });
 
 export const createPost = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-  const userId = req.user?.id;
+  if (!req.user) throw new BadRequestError('User context required');
+  const userId = req.user.id;
   const { lessonId, content, parentId } = req.body;
-  if (!userId) throw new BadRequestError('User context required');
   if (!lessonId || !content) throw new BadRequestError('Lesson ID and comment text are required');
 
   const isInstructor = req.user.role === 'instructor' || req.user.role === 'admin';
@@ -36,8 +36,8 @@ export const toggleUpvote = asyncHandler(async (req: AuthenticatedRequest, res: 
 });
 
 export const moderatePost = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-  const moderatorId = req.user?.id;
-  if (!moderatorId) throw new BadRequestError('User context required');
+  if (!req.user) throw new BadRequestError('User context required');
+  const moderatorId = req.user.id;
   if (req.user.role !== 'instructor' && req.user.role !== 'admin') {
     throw new UnauthorizedError('Moderator privileges required');
   }

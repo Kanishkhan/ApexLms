@@ -64,8 +64,8 @@ export const getAssignmentSubmissions = asyncHandler(async (req: AuthenticatedRe
 });
 
 export const gradeSubmission = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-  const instructorId = req.user?.id;
-  if (!instructorId) throw new BadRequestError('User context required');
+  if (!req.user) throw new BadRequestError('User context required');
+  const instructorId = req.user.id;
   if (req.user.role !== 'instructor' && req.user.role !== 'admin') {
     throw new UnauthorizedError('Instructor privileges required to grade submissions');
   }

@@ -313,6 +313,8 @@ export default function Navbar() {
                   { title: 'Explore Curriculums', desc: 'Browse the advanced software architect course catalog', path: '/courses', shortcut: 'G C' },
                   { title: 'Student Dashboard', desc: 'Resume syllabi modules, skill trees, and developer metrics', path: '/dashboard', shortcut: 'G D' },
                   { title: 'Launch Coding Arena', desc: 'Attempt Monaco-editor sandbox daily coding problems', path: '/dashboard', shortcut: 'G A', tab: 'challenges' },
+                  { title: 'AI Speed Code Duel', desc: 'Speed-run compiler challenges against automated AI agents in real-time', path: '/coding/arena/duel', shortcut: 'G S' },
+                  { title: 'Lo-Fi Focus Space', desc: 'Immersive Pomodoro desk with dynamic Web Audio lofi synth soundscapes', path: '/dashboard/focus', shortcut: 'G F' },
                   { title: 'Edit Account Profile', desc: 'Update details, upload avatar credentials, and inspect XP', path: '/profile', shortcut: 'G P' }
                 ]
                 .filter(item => item.title.toLowerCase().includes(paletteQuery.toLowerCase()) || item.desc.toLowerCase().includes(paletteQuery.toLowerCase()))

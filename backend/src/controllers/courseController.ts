@@ -37,13 +37,13 @@ export const createCourse = asyncHandler(async (req: AuthenticatedRequest, res: 
 
 export const updateCourse = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   if (!req.user) throw new BadRequestError('User context missing');
-  const course = await courseService.updateCourse(req.params.id, req.user.id, req.body);
+  const course = await courseService.updateCourse(req.params.id, req.user.id, req.body, req.user.role);
   res.status(200).json(ApiResponse.success(course, 'Course updated successfully'));
 });
 
 export const deleteCourse = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   if (!req.user) throw new BadRequestError('User context missing');
-  await courseService.deleteCourse(req.params.id, req.user.id);
+  await courseService.deleteCourse(req.params.id, req.user.id, req.user.role);
   res.status(200).json(ApiResponse.success(null, 'Course deleted successfully'));
 });
 
@@ -65,7 +65,7 @@ export const addModule = asyncHandler(async (req: AuthenticatedRequest, res: Res
   const parsed = createModuleSchema.safeParse(req.body);
   if (!parsed.success) throw parsed.error;
 
-  const mod = await courseService.addModule(req.params.courseId, req.user.id, parsed.data);
+  const mod = await courseService.addModule(req.params.courseId, req.user.id, parsed.data, req.user.role);
   res.status(201).json(ApiResponse.success(mod, 'Module added successfully'));
 });
 
@@ -75,7 +75,7 @@ export const addLesson = asyncHandler(async (req: AuthenticatedRequest, res: Res
   const parsed = createLessonSchema.safeParse(req.body);
   if (!parsed.success) throw parsed.error;
 
-  const lesson = await courseService.addLesson(req.params.moduleId, req.user.id, parsed.data);
+  const lesson = await courseService.addLesson(req.params.moduleId, req.user.id, parsed.data, req.user.role);
   res.status(201).json(ApiResponse.success(lesson, 'Lesson added successfully'));
 });
 
@@ -83,6 +83,12 @@ export const uploadThumbnail = asyncHandler(async (req: AuthenticatedRequest, re
   if (!req.file) throw new BadRequestError('No image file provided');
   const url = await cloudinaryService.uploadFile(req.file.buffer, req.file.mimetype);
   res.status(200).json(ApiResponse.success({ url }, 'Thumbnail uploaded successfully'));
+});
+
+export const uploadVideo = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.file) throw new BadRequestError('No video file provided');
+  const url = await cloudinaryService.uploadFile(req.file.buffer, req.file.mimetype);
+  res.status(200).json(ApiResponse.success({ url }, 'Video uploaded successfully'));
 });
 
 export const toggleLessonProgress = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
