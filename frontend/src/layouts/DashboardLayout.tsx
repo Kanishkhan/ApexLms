@@ -61,6 +61,8 @@ export default function DashboardLayout() {
         return [
           { label: 'Admin Overview', path: '/admin', icon: LayoutDashboard },
           { label: 'Platform Users', path: '/admin/users', icon: Users },
+          { label: 'AI Speed Code Duel', path: '/coding/arena/duel', icon: Flame },
+          { label: 'Lo-Fi Focus Space', path: '/dashboard/focus', icon: Timer },
           { label: 'Course Catalog', path: '/courses', icon: BookOpen },
         ];
       case 'instructor':
@@ -68,6 +70,8 @@ export default function DashboardLayout() {
           { label: 'Studio Analytics', path: '/instructor', icon: LayoutDashboard },
           { label: 'My Courses Manager', path: '/instructor/courses', icon: ClipboardList },
           { label: 'Create Course', path: '/instructor/courses/new', icon: PlusCircle },
+          { label: 'AI Speed Code Duel', path: '/coding/arena/duel', icon: Flame },
+          { label: 'Lo-Fi Focus Space', path: '/dashboard/focus', icon: Timer },
           { label: 'Course Catalog', path: '/courses', icon: BookOpen },
         ];
       case 'student':

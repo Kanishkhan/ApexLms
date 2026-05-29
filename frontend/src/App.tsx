@@ -53,13 +53,10 @@ export default function App() {
       <Route path="/register" element={<Register />} />
 
       {/* Protected Routes */}
-      {/* Student dashboard paths */}
-      <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+      {/* Shared educational experiences for all roles */}
+      <Route element={<ProtectedRoute allowedRoles={['student', 'instructor', 'admin']} />}>
         <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<StudentDashboard />} />
-          <Route path="/dashboard/enrolled" element={<StudentDashboard />} />
           <Route path="/dashboard/focus" element={<FocusDeck />} />
-          <Route path="/profile" element={<Profile />} />
         </Route>
         
         {/* Fullscreen player experiences */}
@@ -68,6 +65,15 @@ export default function App() {
         <Route path="/coding/:id" element={<CodingArena />} />
         <Route path="/coding/arena/duel" element={<SpeedDuel />} />
         <Route path="/assignments/:id" element={<ProjectConsole />} />
+      </Route>
+
+      {/* Student dashboard paths */}
+      <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/dashboard" element={<StudentDashboard />} />
+          <Route path="/dashboard/enrolled" element={<StudentDashboard />} />
+          <Route path="/profile" element={<Profile />} />
+        </Route>
       </Route>
 
       {/* Instructor studio paths */}
