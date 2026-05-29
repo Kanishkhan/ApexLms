@@ -44,16 +44,15 @@ export default function Login() {
     try {
       const res = await authService.login({ email, password });
       
-      // Store tokens
-      localStorage.setItem('accessToken', res.data.accessToken);
-      localStorage.setItem('refreshToken', res.data.refreshToken);
+      // Extract from standardized nested data envelope
+      const { user, accessToken } = res.data;
 
-      dispatch(authSuccess(res.data.user));
+      // Dispatch authSuccess with the correct expected payload structure
+      dispatch(authSuccess({ user, accessToken }));
 
       // Redirect by role
-      const role = res.data.user.role;
-      if (role === 'admin') navigate('/admin');
-      else if (role === 'instructor') navigate('/instructor');
+      if (user.role === 'admin') navigate('/admin');
+      else if (user.role === 'instructor') navigate('/instructor');
       else navigate('/dashboard');
     } catch (err: any) {
       const errMsg = err.response?.data?.message || 'Authentication failed. Please verify credentials.';

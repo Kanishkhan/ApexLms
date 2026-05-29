@@ -51,11 +51,11 @@ export default function Register() {
     try {
       const res = await authService.register({ name, email, password, role });
       
-      // Store tokens
-      localStorage.setItem('accessToken', res.data.accessToken);
-      localStorage.setItem('refreshToken', res.data.refreshToken);
+      // Extract from standardized nested data envelope
+      const { user, accessToken } = res.data;
 
-      dispatch(authSuccess(res.data.user));
+      // Dispatch authSuccess with the correct expected payload structure
+      dispatch(authSuccess({ user, accessToken }));
       
       if (role === 'instructor') navigate('/instructor');
       else navigate('/dashboard');
