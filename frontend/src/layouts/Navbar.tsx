@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
 import { logoutSuccess } from '../store/authSlice';
 import { toggleDarkMode } from '../store/uiSlice';
+import { motion, AnimatePresence } from 'framer-motion';
 import { authService, gamificationService } from '../services/api';
 import { 
   BookOpen, 
@@ -27,6 +28,22 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [paletteQuery, setPaletteQuery] = useState('');
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setCommandPaletteOpen(prev => !prev);
+      }
+      if (e.key === 'Escape') {
+        setCommandPaletteOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   React.useEffect(() => {
     if (isAuthenticated && user) {
@@ -264,6 +281,84 @@ export default function Navbar() {
           )}
         </div>
       )}
+      {/* Ctrl+K Global Command Palette Overlay Modal */}
+      <AnimatePresence>
+        {commandPaletteOpen && (
+          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-start justify-center pt-[15vh] p-4 text-left font-sans">
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20, scale: 0.98 }}
+              className="w-full max-w-lg rounded-2xl border-2 border-slate-350 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl overflow-hidden"
+            >
+              {/* Input header */}
+              <div className="p-4 border-b-2 border-slate-200 dark:border-slate-800 flex items-center space-x-2">
+                <BookOpen className="h-5 w-5 text-indigo-500 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Search course tracks, launch Monaco arenas, or toggle themes..."
+                  value={paletteQuery}
+                  onChange={(e) => setPaletteQuery(e.target.value)}
+                  className="flex-grow bg-transparent text-sm focus:outline-none dark:text-white"
+                  autoFocus
+                />
+                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest font-mono">ESC TO CLOSE</span>
+              </div>
+
+              {/* Suggestions results */}
+              <div className="p-2 max-h-[300px] overflow-y-auto divide-y divide-slate-100 dark:divide-slate-850">
+                
+                {/* Search suggestions filtering */}
+                {[
+                  { title: 'Explore Curriculums', desc: 'Browse the advanced software architect course catalog', path: '/courses', shortcut: 'G C' },
+                  { title: 'Student Dashboard', desc: 'Resume syllabi modules, skill trees, and developer metrics', path: '/dashboard', shortcut: 'G D' },
+                  { title: 'Launch Coding Arena', desc: 'Attempt Monaco-editor sandbox daily coding problems', path: '/dashboard', shortcut: 'G A', tab: 'challenges' },
+                  { title: 'Edit Account Profile', desc: 'Update details, upload avatar credentials, and inspect XP', path: '/profile', shortcut: 'G P' }
+                ]
+                .filter(item => item.title.toLowerCase().includes(paletteQuery.toLowerCase()) || item.desc.toLowerCase().includes(paletteQuery.toLowerCase()))
+                .map((cmd, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setCommandPaletteOpen(false);
+                      setPaletteQuery('');
+                      navigate(cmd.path);
+                    }}
+                    className="w-full p-3 rounded-xl flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-850 transition-colors"
+                  >
+                    <div>
+                      <h4 className="text-xs font-extrabold text-slate-850 dark:text-white leading-tight">{cmd.title}</h4>
+                      <p className="text-[10px] text-slate-450 dark:text-slate-500 mt-1 leading-normal font-sans">{cmd.desc}</p>
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 font-mono bg-slate-100 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-205">
+                      {cmd.shortcut}
+                    </span>
+                  </button>
+                ))}
+
+                {/* Dark Mode action shortcut */}
+                {paletteQuery === '' && (
+                  <button
+                    onClick={() => {
+                      setCommandPaletteOpen(false);
+                      dispatch(toggleDarkMode());
+                    }}
+                    className="w-full p-3 rounded-xl flex items-center justify-between text-left hover:bg-slate-50 dark:hover:bg-slate-850 transition-colors"
+                  >
+                    <div>
+                      <h4 className="text-xs font-extrabold text-slate-850 dark:text-white leading-tight">Toggle Dark Mode Theme</h4>
+                      <p className="text-[10px] text-slate-450 dark:text-slate-500 mt-1 leading-normal font-sans">Toggle between dark and light WCAG AA styles</p>
+                    </div>
+                    <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 font-mono bg-slate-100 dark:bg-slate-950 px-2 py-0.5 rounded border border-slate-205">
+                      T T
+                    </span>
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
