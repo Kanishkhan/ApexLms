@@ -14,6 +14,13 @@ import { Quiz } from '../models/Quiz';
 import { Enrollment } from '../models/Enrollment';
 import { Progress } from '../models/Progress';
 import { QuizAttempt } from '../models/QuizAttempt';
+import { CodingProblem } from '../models/CodingProblem';
+import { CodeSubmission } from '../models/CodeSubmission';
+import { Assignment } from '../models/Assignment';
+import { Submission } from '../models/Submission';
+import { Discussion } from '../models/Discussion';
+import { Achievement } from '../models/Achievement';
+import { Notification } from '../models/Notification';
 
 const seedDatabase = async () => {
   const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/enterprise_lms';
@@ -32,6 +39,13 @@ const seedDatabase = async () => {
   await Enrollment.deleteMany({});
   await Progress.deleteMany({});
   await QuizAttempt.deleteMany({});
+  await CodingProblem.deleteMany({});
+  await CodeSubmission.deleteMany({});
+  await Assignment.deleteMany({});
+  await Submission.deleteMany({});
+  await Discussion.deleteMany({});
+  await Achievement.deleteMany({});
+  await Notification.deleteMany({});
   console.log('Collections cleared.');
 
   // Create Users
@@ -366,6 +380,71 @@ Raft decomposes consensus into three subproblems:
         explanation: 'Multi-stage builds permit you to compile your code in an intermediate image containing compile-time tools, and copy only the final release binary to a tiny release-only image.',
       },
     ],
+  });
+
+  // Create Coding Problems
+  console.log('Creating Coding Problems...');
+  const problem1 = await CodingProblem.create({
+    title: 'Two Sum',
+    description: `Given an array of integers \`nums\` and an integer \`target\`, return *indices of the two numbers such that they add up to \`target\`*.
+
+You may assume that each input would have ***exactly* one solution**, and you may not use the *same* element twice.
+
+You can return the answer in any order.
+
+### Example 1:
+\`\`\`
+Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
+\`\`\`
+`,
+    difficulty: 'easy',
+    topicTags: ['Array', 'Hash Table'],
+    starterTemplates: [
+      {
+        language: 'javascript',
+        templateCode: `function twoSum(nums, target) {
+  // Write your code here
+  
+}`,
+      },
+      {
+        language: 'python',
+        templateCode: `def two_sum(nums, target):
+    # Write your code here
+    pass`,
+      }
+    ],
+    testCases: [
+      { input: '[2,7,11,15], 9', expectedOutput: '[0,1]', isHidden: false },
+      { input: '[3,2,4], 6', expectedOutput: '[1,2]', isHidden: false },
+      { input: '[3,3], 6', expectedOutput: '[0,1]', isHidden: true }
+    ],
+    points: 100
+  });
+
+  // Create Assignments
+  console.log('Creating Course Assignments...');
+  const assignment1 = await Assignment.create({
+    course: course1._id,
+    module: c1m2._id,
+    title: 'Build a Serverless E-Commerce Workspace',
+    description: `Deploy a production-ready Next.js App Router store utilizing:
+1. React Server Components for SEO and fast loading catalog screens.
+2. Server Actions for transactional shopping cart checkouts.
+3. Hardened rate limiters and secure middleware layers.
+
+### Deliverables:
+- GitHub repository link containing a working multi-stage Dockerfile setup.
+- Brief markdown report reviewing optimization and caching benchmarks.`,
+    deadline: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    rubric: [
+      { criteria: 'RSC Boundary Isolation & Code Quality', maxPoints: 40 },
+      { criteria: 'Server Actions Transaction Security', maxPoints: 30 },
+      { criteria: 'Docker Containerization & Setup', maxPoints: 30 }
+    ],
+    maxPoints: 100
   });
 
   // Create an enrollment and some progress for the student in Course 1

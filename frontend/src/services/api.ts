@@ -125,3 +125,95 @@ export const dashboardService = {
     return res.data;
   },
 };
+
+export const codingService = {
+  getProblems: async () => {
+    const res = await apiClient.get('/coding/problems');
+    return res.data;
+  },
+  getProblemById: async (id: string) => {
+    const res = await apiClient.get(`/coding/problems/${id}`);
+    return res.data;
+  },
+  runCode: async (id: string, data: { code: string; language: string }) => {
+    const res = await apiClient.post(`/coding/problems/${id}/run`, data);
+    return res.data;
+  },
+  submitCode: async (id: string, data: { code: string; language: string }) => {
+    const res = await apiClient.post(`/coding/problems/${id}/submit`, data);
+    return res.data;
+  },
+  askTutor: async (data: { topic: string; code: string }) => {
+    const res = await apiClient.post('/coding/tutor/ask', data);
+    return res.data;
+  },
+  reviewCode: async (id: string, data: { code: string; language: string }) => {
+    const res = await apiClient.post(`/coding/problems/${id}/review`, data);
+    return res.data;
+  },
+};
+
+export const assignmentService = {
+  getAssignments: async (courseId: string) => {
+    const res = await apiClient.get(`/assignments/course/${courseId}`);
+    return res.data;
+  },
+  getStudentSubmissions: async () => {
+    const res = await apiClient.get('/assignments/submissions/student');
+    return res.data;
+  },
+  getAssignmentById: async (id: string) => {
+    const res = await apiClient.get(`/assignments/${id}`);
+    return res.data;
+  },
+  submitAssignment: async (id: string, data: { githubUrl: string; submissionText?: string }) => {
+    const res = await apiClient.post(`/assignments/${id}/submit`, data);
+    return res.data;
+  },
+  getAssignmentSubmissions: async (id: string) => {
+    const res = await apiClient.get(`/assignments/${id}/submissions`);
+    return res.data;
+  },
+  gradeSubmission: async (submissionId: string, data: { pointsAwarded: number[]; feedbackComments: string }) => {
+    const res = await apiClient.post(`/assignments/submissions/${submissionId}/grade`, data);
+    return res.data;
+  },
+};
+
+export const discussionService = {
+  getDiscussions: async (lessonId: string) => {
+    const res = await apiClient.get(`/discussions/lesson/${lessonId}`);
+    return res.data;
+  },
+  createPost: async (data: { lessonId: string; content: string; parentId?: string }) => {
+    const res = await apiClient.post('/discussions', data);
+    return res.data;
+  },
+  toggleUpvote: async (id: string) => {
+    const res = await apiClient.post(`/discussions/${id}/upvote`);
+    return res.data;
+  },
+  moderatePost: async (id: string, action: string) => {
+    const res = await apiClient.post(`/discussions/${id}/moderate`, { action });
+    return res.data;
+  },
+};
+
+export const gamificationService = {
+  getAchievementsProfile: async () => {
+    const res = await apiClient.get('/gamification/profile');
+    return res.data;
+  },
+  checkAndUpdateStreak: async () => {
+    const res = await apiClient.post('/gamification/streak');
+    return res.data;
+  },
+  getNotifications: async () => {
+    const res = await apiClient.get('/gamification/notifications');
+    return res.data;
+  },
+  markNotificationsRead: async (notificationIds: string[]) => {
+    const res = await apiClient.post('/gamification/notifications/read', { notificationIds });
+    return res.data;
+  },
+};

@@ -22,6 +22,8 @@ import StudentDashboard from './pages/StudentDashboard';
 import InstructorDashboard from './pages/InstructorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
+import CodingArena from './pages/CodingArena';
+import ProjectConsole from './pages/ProjectConsole';
 
 export default function App() {
   const { darkMode } = useSelector((state: RootState) => state.ui);
@@ -60,6 +62,8 @@ export default function App() {
         {/* Fullscreen player experiences */}
         <Route path="/courses/:id/play" element={<CoursePlayer />} />
         <Route path="/quizzes/:id/play" element={<QuizPlayer />} />
+        <Route path="/coding/:id" element={<CodingArena />} />
+        <Route path="/assignments/:id" element={<ProjectConsole />} />
       </Route>
 
       {/* Instructor studio paths */}

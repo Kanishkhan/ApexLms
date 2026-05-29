@@ -12,6 +12,10 @@ import authRoutes from './routes/authRoutes';
 import courseRoutes from './routes/courseRoutes';
 import quizRoutes from './routes/quizRoutes';
 import dashboardRoutes from './routes/dashboardRoutes';
+import codingRoutes from './routes/codingRoutes';
+import assignmentRoutes from './routes/assignmentRoutes';
+import discussionRoutes from './routes/discussionRoutes';
+import gamificationRoutes from './routes/gamificationRoutes';
 
 const app = express();
 
@@ -38,6 +42,10 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/courses', courseRoutes);
 app.use('/api/v1/quizzes', quizRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
+app.use('/api/v1/coding', codingRoutes);
+app.use('/api/v1/assignments', assignmentRoutes);
+app.use('/api/v1/discussions', discussionRoutes);
+app.use('/api/v1/gamification', gamificationRoutes);
 
 // Fallback for undefined routes
 app.use('*', (req, res, next) => {

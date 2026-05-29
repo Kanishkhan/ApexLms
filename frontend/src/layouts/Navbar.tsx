@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import type { RootState } from '../store';
 import { logoutSuccess } from '../store/authSlice';
 import { toggleDarkMode } from '../store/uiSlice';
-import { authService } from '../services/api';
+import { authService, gamificationService } from '../services/api';
 import { 
   BookOpen, 
   User as UserIcon, 
@@ -14,7 +14,8 @@ import {
   Sun, 
   Moon, 
   LayoutDashboard, 
-  GraduationCap 
+  GraduationCap,
+  Bell
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -25,6 +26,25 @@ export default function Navbar() {
   
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchUnreadCount();
+      const interval = setInterval(fetchUnreadCount, 15000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, user]);
+
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await gamificationService.getNotifications();
+      const count = res.data.filter((n: any) => !n.isRead).length;
+      setUnreadCount(count);
+    } catch {
+      // Ignore
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -74,6 +94,19 @@ export default function Navbar() {
           >
             {darkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </button>
+
+          {isAuthenticated && user && (
+            <Link 
+              to="/dashboard"
+              className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative"
+              title="View Alerts Feed"
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+              )}
+            </Link>
+          )}
 
           {isAuthenticated && user ? (
             <div className="relative">

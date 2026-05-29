@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../store';
 import { courseService, quizService } from '../services/api';
 import type { Course, Lesson, Module } from '../types';
 import VideoPlayer from '../components/VideoPlayer';
 import PdfViewer from '../components/PdfViewer';
+import DiscussionsSection from '../components/DiscussionsSection';
 import { 
   ArrowLeft, 
   CheckCircle, 
@@ -26,6 +29,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function CoursePlayer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const [course, setCourse] = useState<Course | null>(null);
   const [loading, setLoading] = useState(true);
@@ -277,6 +281,13 @@ export default function CoursePlayer() {
               <h2 className="text-lg font-black text-slate-900 dark:text-white">{currentLesson.title}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-405 leading-relaxed font-normal">{currentLesson.description}</p>
             </div>
+
+            {/* Threaded Q&A Lesson Discussions */}
+            <DiscussionsSection 
+              lessonId={currentLesson._id} 
+              userRole={user?.role} 
+              userId={(user as any)?._id || (user as any)?.id} 
+            />
 
           </div>
         </div>
