@@ -168,7 +168,7 @@ export default function DiscussionsSection({ lessonId, userRole, userId }: Discu
                 <img
                   src={comment.user.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${comment.user.name}`}
                   alt={comment.user.name}
-                  className="h-8.5 w-8.5 rounded-full border border-slate-200 dark:border-slate-800 object-cover bg-slate-50 shrink-0"
+                  className="h-8 w-8 rounded-full border border-slate-200 dark:border-slate-800 object-cover bg-slate-50 shrink-0"
                 />
 
                 <div className="flex-grow space-y-1.5 overflow-hidden">

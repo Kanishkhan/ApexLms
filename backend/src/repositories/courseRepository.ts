@@ -41,7 +41,6 @@ export class CourseRepository {
         ...courseData,
         _id: `c-${mockCourses.length + 1}`,
         instructor: String(courseData.instructor),
-        price: Number(courseData.price) || 0,
         studentsEnrolled: [],
         tags: courseData.tags || [],
         status: courseData.status || 'draft',

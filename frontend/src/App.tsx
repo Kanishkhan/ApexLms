@@ -24,8 +24,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
 import CodingArena from './pages/CodingArena';
 import ProjectConsole from './pages/ProjectConsole';
-import SpeedDuel from './pages/SpeedDuel';
 import FocusDeck from './pages/FocusDeck';
+import LiveQuizPlayer from './pages/LiveQuizPlayer';
 
 export default function App() {
   const { darkMode } = useSelector((state: RootState) => state.ui);
@@ -63,8 +63,8 @@ export default function App() {
         <Route path="/courses/:id/play" element={<CoursePlayer />} />
         <Route path="/quizzes/:id/play" element={<QuizPlayer />} />
         <Route path="/coding/:id" element={<CodingArena />} />
-        <Route path="/coding/arena/duel" element={<SpeedDuel />} />
         <Route path="/assignments/:id" element={<ProjectConsole />} />
+        <Route path="/live-quiz" element={<LiveQuizPlayer />} />
       </Route>
 
       {/* Student dashboard paths */}

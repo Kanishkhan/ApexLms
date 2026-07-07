@@ -45,7 +45,6 @@ export let mockCourses = [
     description: 'This enterprise-grade course covers theoretical and practical aspects of building distributed systems. You will learn about load balancing, database sharding, caching strategies, messaging queues (Kafka, RabbitMQ), containerization (Docker, Kubernetes), and design patterns like CQRS and Event Sourcing.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600',
     instructor: 'u-2',
-    price: 199,
     category: 'Software Engineering',
     tags: ['System Design', 'Microservices', 'Scale'],
     level: 'advanced' as const,
@@ -61,7 +60,6 @@ export let mockCourses = [
     description: 'Learn how massive frontend codebases are structured in top-tier companies. This course details robust state management, responsive custom hooks, performance profiling, advanced code-splitting, custom rendering pipelines, and robust testing using Jest and Playwright.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600',
     instructor: 'u-2',
-    price: 149,
     category: 'Frontend Development',
     tags: ['React', 'TypeScript', 'Redux'],
     level: 'intermediate' as const,
@@ -77,7 +75,6 @@ export let mockCourses = [
     description: 'A beginner-friendly entry into the DevOps space. Learn infrastructure as code (Terraform), continuous integration with GitHub Actions, cluster management using Kubernetes, and metrics logging using Prometheus and Grafana.',
     thumbnailUrl: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?w=600',
     instructor: 'u-2',
-    price: 99,
     category: 'DevOps',
     tags: ['Docker', 'Kubernetes', 'Cloud'],
     level: 'beginner' as const,
@@ -415,5 +412,104 @@ export let mockQuizAttempts = [
     passed: false,
     answers: [1, 1, 1], // Wrong on Q2
     attemptedAt: new Date('2026-02-21'),
+  }
+];
+
+export let mockCodingProblems = [
+  {
+    _id: 'cp-1',
+    title: 'Reverse Words in String',
+    description: 'Write a function `reverseWords(s)` that takes a string `s` and reverses the order of words. A word is defined as a sequence of non-space characters. The words in `s` will be separated by at least one space. Return the words joined by a single space with no leading or trailing spaces.',
+    difficulty: 'easy' as const,
+    topicTags: ['string', 'algorithms'],
+    points: 150,
+    starterTemplates: [
+      { language: 'javascript', templateCode: `function reverseWords(s) {\n  // Write your speed solution here...\n  \n}` }
+    ],
+    testCases: [
+      { input: '"the sky is blue"', expectedOutput: '"blue is sky the"', isHidden: false },
+      { input: '"  hello world  "', expectedOutput: '"world hello"', isHidden: false },
+      { input: '"a good   example"', expectedOutput: '"example good a"', isHidden: true }
+    ]
+  },
+  {
+    _id: 'cp-2',
+    title: 'Two Sum',
+    description: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.',
+    difficulty: 'easy' as const,
+    topicTags: ['array', 'hash-table'],
+    points: 100,
+    starterTemplates: [
+      { language: 'javascript', templateCode: `function twoSum(nums, target) {\n  // Write solution here...\n}` }
+    ],
+    testCases: [
+      { input: '[2,7,11,15], 9', expectedOutput: '[0,1]', isHidden: false }
+    ]
+  }
+];
+
+export let mockCodeSubmissions = [] as any[];
+
+export let mockAchievements = [
+  {
+    _id: 'ach-1',
+    student: 'u-1',
+    totalXp: 450,
+    level: 2,
+    currentStreak: 3,
+    longestStreak: 5,
+    badges: [
+      { badgeId: 'streak-3', title: '3-Day Studying Flame', unlockedAt: new Date() }
+    ],
+    lastActiveDate: new Date()
+  }
+];
+
+export let mockNotifications = [
+  {
+    _id: 'not-1',
+    user: 'u-1',
+    title: 'Welcome to Apex LMS!',
+    message: 'Start exploring interactive syllabi and compile challenges.',
+    type: 'achievement',
+    isRead: false,
+    createdAt: new Date()
+  }
+];
+
+export let mockAssignments: any[] = [
+  {
+    _id: 'a-1',
+    course: 'c-1',
+    module: 'm-1',
+    title: 'Distributed Hash Ring implementation',
+    description: 'Implement a consistent hashing ring using JavaScript or TypeScript.',
+    maxPoints: 100,
+    deadline: new Date('2026-12-31'),
+    rubric: [
+      { criteria: 'Correctness', maxPoints: 50, description: 'Passes hash tests' },
+      { criteria: 'Efficiency', maxPoints: 50, description: 'Logarithmic lookup time complexity' }
+    ]
+  }
+];
+
+export let mockSubmissions: any[] = [
+  {
+    _id: 's-1',
+    student: 'u-1',
+    assignment: {
+      _id: 'a-1',
+      title: 'Distributed Hash Ring implementation',
+      maxPoints: 100,
+      course: { title: 'Advanced System Design & Microservices' }
+    },
+    githubUrl: 'https://github.com/student/consistent-hash-ring',
+    status: 'graded',
+    pointsEarned: 95,
+    feedback: {
+      comments: 'Excellent consistent hashing mapping algorithm. Runs in log(N) time successfully.',
+      gradedAt: new Date()
+    },
+    submittedAt: new Date()
   }
 ];

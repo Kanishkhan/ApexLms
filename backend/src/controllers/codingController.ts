@@ -41,6 +41,21 @@ export const submitCode = asyncHandler(async (req: AuthenticatedRequest, res: Re
   res.status(200).json(ApiResponse.success(result, 'Code submission evaluated successfully'));
 });
 
+export const submitCodeAsync = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const { code, language } = req.body;
+  const studentId = req.user?.id;
+  if (!studentId) throw new BadRequestError('User context required');
+  if (!code || !language) throw new BadRequestError('Code string and programming language are required');
+
+  const result = await codingService.submitCodeAsync(studentId, req.params.id, code, language);
+  res.status(202).json(ApiResponse.success(result, 'Code submission queued successfully'));
+});
+
+export const getSubmissionStatus = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  const result = await codingService.getSubmissionStatus(req.params.jobId);
+  res.status(200).json(ApiResponse.success(result, 'Submission status retrieved successfully'));
+});
+
 // AI Tutor help context trigger
 export const askTutor = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   const studentId = req.user?.id;

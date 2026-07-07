@@ -56,6 +56,7 @@ export default function CodingArena() {
   const [language, setLanguage] = useState('javascript');
   const [running, setRunning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [submissionStatusText, setSubmissionStatusText] = useState('');
   const [sidebarTab, setSidebarTab] = useState<'explorer' | 'spec'>('explorer');
   const [terminalTab, setTerminalTab] = useState<'console' | 'asserts' | 'heap'>('console');
   
@@ -148,25 +149,69 @@ ${res.data.description}
     setIsSubmitResult(true);
     setTerminalOutput(null);
     setTerminalTab('asserts');
+    setSubmissionStatusText('Queuing code in compiler sandbox...');
+
     try {
-      const res = await codingService.submitCode(problem._id, { code: solutionCode, language });
-      const { submission, xpEarned } = res.data;
-      
-      setTerminalOutput(submission);
-      
-      if (submission.status === 'accepted' && xpEarned > 0) {
-        setCelebrationXp(xpEarned);
-        setShowXpCelebration(true);
-        // Auto dismiss celebration after 4.5s
-        setTimeout(() => setShowXpCelebration(false), 4500);
-      }
+      const initRes = await codingService.submitCodeAsync(problem._id, { code: solutionCode, language });
+      const { jobId } = initRes.data;
+
+      // Start polling
+      let pollCount = 0;
+      const interval = setInterval(async () => {
+        pollCount++;
+        if (pollCount > 15) { // 15s timeout
+          clearInterval(interval);
+          setTerminalOutput({
+            status: 'time_limit_exceeded',
+            errorMessage: 'Polling execution result timed out.'
+          });
+          setSubmitting(false);
+          setSubmissionStatusText('');
+          return;
+        }
+
+        try {
+          const statusRes = await codingService.getSubmissionStatus(jobId);
+          const job = statusRes.data;
+          
+          if (job.status === 'queued') {
+            setSubmissionStatusText('Job queued in background worker...');
+          } else if (job.status === 'processing') {
+            setSubmissionStatusText('Evaluating test cases in sandbox...');
+          } else if (job.status === 'completed') {
+            clearInterval(interval);
+            setSubmitting(false);
+            setSubmissionStatusText('');
+
+            const result = job.result;
+            setTerminalOutput(result);
+
+            if (result.status === 'accepted') {
+              setCelebrationXp(100);
+              setShowXpCelebration(true);
+              setTimeout(() => setShowXpCelebration(false), 4500);
+            }
+          } else if (job.status === 'failed') {
+            clearInterval(interval);
+            setSubmitting(false);
+            setSubmissionStatusText('');
+            setTerminalOutput({
+              status: 'internal_error',
+              errorMessage: 'Sandbox compiler failed execution.'
+            });
+          }
+        } catch (e) {
+          // Keep polling
+        }
+      }, 1000);
+
     } catch (err: any) {
       setTerminalOutput({
         status: 'runtime_error',
         errorMessage: err.response?.data?.message || 'Submission compile crashed.',
       });
-    } finally {
       setSubmitting(false);
+      setSubmissionStatusText('');
     }
   };
 
@@ -514,9 +559,9 @@ ${res.data.description}
           {/* Terminal body */}
           <div className="flex-grow p-4 overflow-y-auto font-mono text-[11px] space-y-4 select-text scrollbar-dark">
             {running || submitting ? (
-              <div className="flex items-center space-x-2 text-slate-555 animate-pulse">
-                <span className="h-1.5 w-1.5 rounded-full bg-slate-400 animate-ping" />
-                <span>Isolated container executing tests...</span>
+              <div className="flex items-center space-x-2 text-slate-400 animate-pulse">
+                <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-ping mr-1" />
+                <span>{submitting && submissionStatusText ? submissionStatusText : 'Isolated container executing tests...'}</span>
               </div>
             ) : terminalOutput ? (
               <div className="space-y-3">

@@ -41,7 +41,6 @@ export interface Course {
     email: string;
     avatarUrl?: string;
   };
-  price: number;
   category: string;
   tags: string[];
   level: 'beginner' | 'intermediate' | 'advanced';

@@ -100,7 +100,7 @@ export class CourseService {
     // Check ownership (bypassed for admin)
     if (role !== 'admin') {
       const instId = getInstructorIdStr(course.instructor);
-      if (instId !== instructorId) {
+      if (instId !== String(instructorId)) {
         throw new BadRequestError('You do not own this course');
       }
     }
@@ -130,8 +130,8 @@ export class CourseService {
     // Check ownership (bypassed for admin)
     if (role !== 'admin') {
       const instId = getInstructorIdStr(course.instructor);
-      if (instId !== instructorId) {
-        throw new BadRequestError('You do not own this course');
+      if (instId !== String(instructorId)) {
+        throw new BadRequestError('You do not own this course. You can only add modules to courses you created.');
       }
     }
 
@@ -151,7 +151,7 @@ export class CourseService {
     // Check ownership (bypassed for admin)
     if (role !== 'admin') {
       const instId = getInstructorIdStr(course.instructor);
-      if (instId !== instructorId) {
+      if (instId !== String(instructorId)) {
         throw new BadRequestError('You do not own this course');
       }
     }
@@ -161,6 +161,78 @@ export class CourseService {
       module: moduleId,
       course: course._id,
     });
+  }
+
+  async updateLesson(lessonId: string, instructorId: string, lessonData: any, role?: string): Promise<any> {
+    const lesson = await lessonRepository.findById(lessonId);
+    if (!lesson) throw new NotFoundError('Lesson not found');
+
+    const course = await courseRepository.findById(String(lesson.course));
+    if (!course) throw new NotFoundError('Parent course not found');
+
+    // Check ownership (bypassed for admin)
+    if (role !== 'admin') {
+      const instId = getInstructorIdStr(course.instructor);
+      if (instId !== String(instructorId)) {
+        throw new BadRequestError('You do not own this course');
+      }
+    }
+
+    return lessonRepository.update(lessonId, lessonData);
+  }
+
+  async deleteLesson(lessonId: string, instructorId: string, role?: string): Promise<void> {
+    const lesson = await lessonRepository.findById(lessonId);
+    if (!lesson) throw new NotFoundError('Lesson not found');
+
+    const course = await courseRepository.findById(String(lesson.course));
+    if (!course) throw new NotFoundError('Parent course not found');
+
+    // Check ownership (bypassed for admin)
+    if (role !== 'admin') {
+      const instId = getInstructorIdStr(course.instructor);
+      if (instId !== String(instructorId)) {
+        throw new BadRequestError('You do not own this course');
+      }
+    }
+
+    await lessonRepository.delete(lessonId);
+  }
+
+  async updateModule(moduleId: string, instructorId: string, moduleData: any, role?: string): Promise<any> {
+    const mod = await moduleRepository.findById(moduleId);
+    if (!mod) throw new NotFoundError('Module not found');
+
+    const course = await courseRepository.findById(String(mod.course));
+    if (!course) throw new NotFoundError('Parent course not found');
+
+    // Check ownership (bypassed for admin)
+    if (role !== 'admin') {
+      const instId = getInstructorIdStr(course.instructor);
+      if (instId !== String(instructorId)) {
+        throw new BadRequestError('You do not own this course');
+      }
+    }
+
+    return moduleRepository.update(moduleId, moduleData);
+  }
+
+  async deleteModule(moduleId: string, instructorId: string, role?: string): Promise<void> {
+    const mod = await moduleRepository.findById(moduleId);
+    if (!mod) throw new NotFoundError('Module not found');
+
+    const course = await courseRepository.findById(String(mod.course));
+    if (!course) throw new NotFoundError('Parent course not found');
+
+    // Check ownership (bypassed for admin)
+    if (role !== 'admin') {
+      const instId = getInstructorIdStr(course.instructor);
+      if (instId !== String(instructorId)) {
+        throw new BadRequestError('You do not own this course');
+      }
+    }
+
+    await moduleRepository.delete(moduleId);
   }
 
   async enroll(studentId: string, courseId: string): Promise<any> {

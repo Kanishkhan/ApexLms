@@ -80,6 +80,22 @@ export const courseService = {
     const res = await apiClient.post(`/courses/modules/${moduleId}/lessons`, lessonData);
     return res.data;
   },
+  updateLesson: async (lessonId: string, lessonData: any) => {
+    const res = await apiClient.put(`/courses/lessons/${lessonId}`, lessonData);
+    return res.data;
+  },
+  deleteLesson: async (lessonId: string) => {
+    const res = await apiClient.delete(`/courses/lessons/${lessonId}`);
+    return res.data;
+  },
+  updateModule: async (moduleId: string, moduleData: any) => {
+    const res = await apiClient.put(`/courses/modules/${moduleId}`, moduleData);
+    return res.data;
+  },
+  deleteModule: async (moduleId: string) => {
+    const res = await apiClient.delete(`/courses/modules/${moduleId}`);
+    return res.data;
+  },
   uploadThumbnail: async (formData: FormData) => {
     const res = await apiClient.post('/courses/upload-thumbnail', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -147,6 +163,14 @@ export const codingService = {
   },
   submitCode: async (id: string, data: { code: string; language: string }) => {
     const res = await apiClient.post(`/coding/problems/${id}/submit`, data);
+    return res.data;
+  },
+  submitCodeAsync: async (id: string, data: { code: string; language: string }) => {
+    const res = await apiClient.post(`/coding/problems/${id}/submit-async`, data);
+    return res.data;
+  },
+  getSubmissionStatus: async (jobId: string) => {
+    const res = await apiClient.get(`/coding/submissions/${jobId}/status`);
     return res.data;
   },
   askTutor: async (data: { topic: string; code: string }) => {
@@ -223,3 +247,65 @@ export const gamificationService = {
     return res.data;
   },
 };
+
+export const assessmentService = {
+  createAssessment: async (data: any) => {
+    const res = await apiClient.post('/assessments', data);
+    return res.data;
+  },
+  getActiveAssessments: async () => {
+    const res = await apiClient.get('/assessments/active');
+    return res.data;
+  },
+  getAssessmentById: async (id: string) => {
+    const res = await apiClient.get(`/assessments/${id}`);
+    return res.data;
+  },
+  startAssessment: async (id: string) => {
+    const res = await apiClient.post(`/assessments/${id}/start`);
+    return res.data;
+  },
+  submitAssessment: async (id: string, answers: any[]) => {
+    const res = await apiClient.post(`/assessments/${id}/submit`, { answers });
+    return res.data;
+  },
+};
+
+export const contestService = {
+  createContest: async (data: any) => {
+    const res = await apiClient.post('/contests', data);
+    return res.data;
+  },
+  getContests: async () => {
+    const res = await apiClient.get('/contests');
+    return res.data;
+  },
+  getContestById: async (id: string) => {
+    const res = await apiClient.get(`/contests/${id}`);
+    return res.data;
+  },
+  registerForContest: async (id: string) => {
+    const res = await apiClient.post(`/contests/${id}/register`);
+    return res.data;
+  },
+  getLeaderboard: async (id: string) => {
+    const res = await apiClient.get(`/contests/${id}/leaderboard`);
+    return res.data;
+  },
+};
+
+export const dailyQuizService = {
+  createDailyQuiz: async (data: any) => {
+    const res = await apiClient.post('/daily-quizzes', data);
+    return res.data;
+  },
+  getDailyQuizToday: async () => {
+    const res = await apiClient.get('/daily-quizzes/today');
+    return res.data;
+  },
+  submitDailyQuiz: async (id: string, answers: any[]) => {
+    const res = await apiClient.post(`/daily-quizzes/${id}/submit`, { answers });
+    return res.data;
+  },
+};
+

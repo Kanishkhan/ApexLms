@@ -170,13 +170,6 @@ export default function CourseDetail() {
 
           {/* Pricing & CTA Column */}
           <div className="p-6 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200/50 dark:border-slate-800/80 flex flex-col justify-center items-center text-center space-y-4 shadow-sm group">
-            <div className="space-y-1">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total Price</p>
-              <div className="text-3xl font-black text-slate-900 dark:text-white">
-                {course.price === 0 ? 'Free Access' : `$${course.price}`}
-              </div>
-            </div>
-            
             {course.isEnrolled ? (
               <div className="w-full space-y-3">
                 <button

@@ -81,13 +81,13 @@ export const addLesson = asyncHandler(async (req: AuthenticatedRequest, res: Res
 
 export const uploadThumbnail = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   if (!req.file) throw new BadRequestError('No image file provided');
-  const url = await cloudinaryService.uploadFile(req.file.buffer, req.file.mimetype);
+  const url = await cloudinaryService.uploadFile(req.file.buffer, req.file.mimetype, req.file.originalname);
   res.status(200).json(ApiResponse.success({ url }, 'Thumbnail uploaded successfully'));
 });
 
 export const uploadVideo = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
   if (!req.file) throw new BadRequestError('No video file provided');
-  const url = await cloudinaryService.uploadFile(req.file.buffer, req.file.mimetype);
+  const url = await cloudinaryService.uploadFile(req.file.buffer, req.file.mimetype, req.file.originalname);
   res.status(200).json(ApiResponse.success({ url }, 'Video uploaded successfully'));
 });
 
@@ -107,4 +107,28 @@ export const toggleLessonBookmark = asyncHandler(async (req: AuthenticatedReques
 
   const result = await courseService.toggleLessonBookmark(req.user.id, req.params.lessonId, bookmark);
   res.status(200).json(ApiResponse.success(result, 'Lesson bookmark updated successfully'));
+});
+
+export const updateLesson = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.user) throw new BadRequestError('User context missing');
+  const lesson = await courseService.updateLesson(req.params.lessonId, req.user.id, req.body, req.user.role);
+  res.status(200).json(ApiResponse.success(lesson, 'Lesson updated successfully'));
+});
+
+export const deleteLesson = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.user) throw new BadRequestError('User context missing');
+  await courseService.deleteLesson(req.params.lessonId, req.user.id, req.user.role);
+  res.status(200).json(ApiResponse.success(null, 'Lesson deleted successfully'));
+});
+
+export const updateModule = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.user) throw new BadRequestError('User context missing');
+  const mod = await courseService.updateModule(req.params.moduleId, req.user.id, req.body, req.user.role);
+  res.status(200).json(ApiResponse.success(mod, 'Module updated successfully'));
+});
+
+export const deleteModule = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.user) throw new BadRequestError('User context missing');
+  await courseService.deleteModule(req.params.moduleId, req.user.id, req.user.role);
+  res.status(200).json(ApiResponse.success(null, 'Module deleted successfully'));
 });

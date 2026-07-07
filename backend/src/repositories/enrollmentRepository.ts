@@ -76,7 +76,7 @@ export class EnrollmentRepository {
     if (global.isMockDb) {
       return mockEnrollments;
     }
-    return Enrollment.find({}).populate('student', 'name email').populate('course', 'title price');
+    return Enrollment.find({}).populate('student', 'name email').populate('course', 'title');
   }
 }
 

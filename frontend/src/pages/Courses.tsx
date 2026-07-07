@@ -170,10 +170,6 @@ export default function Courses() {
                           {course.instructor?.name || 'Instructor'}
                         </span>
                       </div>
-
-                      <div className="font-extrabold text-slate-900 dark:text-white text-sm">
-                        {course.price === 0 ? 'Free' : `$${course.price}`}
-                      </div>
                     </div>
 
                     <Link

@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { courseRepository } from '../repositories/courseRepository';
 import { enrollmentRepository } from '../repositories/enrollmentRepository';
 import { quizAttemptRepository } from '../repositories/quizAttemptRepository';
@@ -8,7 +9,7 @@ import { Progress } from '../models/Progress';
 export class DashboardService {
   async getStudentDashboard(studentId: string): Promise<any> {
     const enrollments = await enrollmentRepository.findByStudentId(studentId);
-    
+
     // Bookmarked lessons retrieval
     let bookmarks: any[] = [];
     if (global.isMockDb) {
@@ -19,10 +20,14 @@ export class DashboardService {
 
     // Dynamic recommendations based on category of enrolled courses
     const allCourses = await courseRepository.findAll({ status: 'published' });
-    const enrolledIds = enrollments.map((e: any) => String(e.course._id || e.course));
+    const enrolledIds = enrollments
+      .filter((e: any) => e.course) // null guard
+      .map((e: any) => String(e.course._id || e.course));
     const notEnrolled = allCourses.filter((c) => !enrolledIds.includes(String(c._id)));
-    
-    const enrolledCategories = enrollments.map((e: any) => e.course.category);
+
+    const enrolledCategories = enrollments
+      .filter((e: any) => e.course)
+      .map((e: any) => e.course.category);
     const recommended = notEnrolled
       .filter((c) => enrolledCategories.includes(c.category))
       .slice(0, 3);
@@ -34,13 +39,15 @@ export class DashboardService {
       enrolledCount: enrollments.length,
       completedCount: enrollments.filter((e: any) => e.progressPercentage >= 100).length,
       inProgressCount: enrollments.filter((e: any) => e.progressPercentage < 100).length,
-      enrollments: enrollments.map((e) => ({
-        id: e.course._id || e.course.id,
-        title: e.course.title,
-        subtitle: e.course.subtitle,
-        thumbnailUrl: e.course.thumbnailUrl,
-        progressPercentage: e.progressPercentage,
-      })),
+      enrollments: enrollments
+        .filter((e: any) => e.course) // skip orphaned
+        .map((e) => ({
+          id: e.course._id || e.course.id,
+          title: e.course.title,
+          subtitle: e.course.subtitle,
+          thumbnailUrl: e.course.thumbnailUrl,
+          progressPercentage: e.progressPercentage,
+        })),
       bookmarks: bookmarks.map((b) => ({
         lessonId: b.lesson?._id || b.lesson,
         title: b.lesson?.title || 'Bookmarked Lesson',
@@ -52,25 +59,44 @@ export class DashboardService {
         subtitle: c.subtitle,
         thumbnailUrl: c.thumbnailUrl,
         category: c.category,
-        price: c.price,
       })),
     };
   }
 
   async getInstructorDashboard(instructorId: string): Promise<any> {
-    const courses = await courseRepository.findAll({ instructor: instructorId });
+    // In MongoDB mode, cast instructorId to ObjectId for proper query matching
+    let instructorFilter: any;
+    if (global.isMockDb) {
+      instructorFilter = { instructor: instructorId };
+    } else {
+      if (Types.ObjectId.isValid(instructorId)) {
+        instructorFilter = { instructor: new Types.ObjectId(instructorId) };
+      } else {
+        instructorFilter = { instructor: instructorId };
+      }
+    }
+
+    const courses = await courseRepository.findAll(instructorFilter);
     const courseIds = courses.map((c) => String(c._id));
 
-    const enrollments = await enrollmentRepository.findAll();
-    const courseEnrollments = enrollments.filter((e: any) => 
-      courseIds.includes(String(e.course._id || e.course))
-    );
+    const allEnrollments = await enrollmentRepository.findAll();
+    // Filter out any enrollments with null/deleted course references
+    const courseEnrollments = allEnrollments.filter((e: any) => {
+      if (!e.course) return false;
+      const eCourseId = String(e.course._id || e.course);
+      return courseIds.includes(eCourseId);
+    });
 
-    const totalStudents = new Set(courseEnrollments.map((e) => String(e.student._id || e.student))).size;
-    const revenue = courseEnrollments.reduce((acc, curr) => acc + (curr.course.price || 0), 0);
+    const totalStudents = new Set(
+      courseEnrollments.map((e) => String(e.student?._id || e.student))
+    ).size;
+
+    // Revenue metric removed
 
     const courseStats = courses.map((course) => {
-      const courseEnrs = courseEnrollments.filter((e: any) => String(e.course._id || e.course) === String(course._id));
+      const courseEnrs = courseEnrollments.filter(
+        (e: any) => String(e.course?._id || e.course) === String(course._id)
+      );
       return {
         id: course._id,
         title: course.title,
@@ -83,11 +109,10 @@ export class DashboardService {
     return {
       courseCount: courses.length,
       totalStudents,
-      revenue,
       courseStats,
       recentEnrollments: courseEnrollments.slice(0, 5).map((e) => ({
-        studentName: e.student.name,
-        courseTitle: e.course.title,
+        studentName: e.student?.name || 'Unknown Student',
+        courseTitle: e.course?.title || 'Unknown Course',
         enrolledAt: e.enrolledAt,
       })),
     };
@@ -95,29 +120,43 @@ export class DashboardService {
 
   async getAdminDashboard(): Promise<any> {
     const users = await userRepository.findAll();
-    const courses = await courseRepository.findAll();
+    const courses = await courseRepository.findAll({});
     const enrollmentsCount = await enrollmentRepository.countAll();
     const quizAttemptsCount = await quizAttemptRepository.countAll();
 
-    const students = users.filter((u) => u.role === 'student');
-    const instructors = users.filter((u) => u.role === 'instructor');
+    const byRole = users.reduce((acc: any, u) => {
+      acc[u.role] = (acc[u.role] || 0) + 1;
+      return acc;
+    }, {});
 
     return {
       totalUsers: users.length,
-      studentCount: students.length,
-      instructorCount: instructors.length,
-      courseCount: courses.length,
-      publishedCourseCount: courses.filter((c) => c.status === 'published').length,
-      draftCourseCount: courses.filter((c) => c.status === 'draft').length,
-      enrollmentsCount,
-      quizAttemptsCount,
-      users: users.slice(0, 10).map((u) => ({
-        id: u._id,
-        name: u.name,
-        email: u.email,
-        role: u.role,
-        createdAt: u.createdAt,
-      })),
+      usersByRole: byRole,
+      totalCourses: courses.length,
+      publishedCourses: courses.filter((c) => c.status === 'published').length,
+      draftCourses: courses.filter((c) => c.status === 'draft').length,
+      totalEnrollments: enrollmentsCount,
+      totalQuizAttempts: quizAttemptsCount,
+      recentUsers: users
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 5)
+        .map((u) => ({
+          id: u._id,
+          name: u.name,
+          email: u.email,
+          role: u.role,
+          createdAt: u.createdAt,
+        })),
+      topCourses: courses
+        .sort((a, b) => (b.studentsEnrolled?.length || 0) - (a.studentsEnrolled?.length || 0))
+        .slice(0, 5)
+        .map((c) => ({
+          id: c._id,
+          title: c.title,
+          category: c.category,
+          enrollments: c.studentsEnrolled?.length || 0,
+          status: c.status,
+        })),
     };
   }
 }

@@ -1,9 +1,27 @@
 import { Achievement, IAchievement } from '../models/Achievement';
 import { Notification } from '../models/Notification';
 import { NotFoundError } from '../utils/customErrors';
+import { mockAchievements, mockNotifications } from '../repositories/mockMemoryDb';
 
 export class GamificationService {
   async getStudentProgress(studentId: string): Promise<IAchievement> {
+    if (global.isMockDb) {
+      let ach = mockAchievements.find((a) => a.student === studentId);
+      if (!ach) {
+        ach = {
+          _id: `ach-${Date.now()}`,
+          student: studentId,
+          totalXp: 0,
+          level: 1,
+          currentStreak: 0,
+          longestStreak: 0,
+          badges: [],
+          lastActiveDate: new Date()
+        };
+        mockAchievements.push(ach);
+      }
+      return ach as any;
+    }
     let achievement = await Achievement.findOne({ student: studentId });
     if (!achievement) {
       achievement = await Achievement.create({
@@ -32,23 +50,51 @@ export class GamificationService {
       leveledUp = true;
     }
 
-    await progress.save();
+    if (global.isMockDb) {
+      progress.lastActiveDate = new Date();
+    } else {
+      await (progress as any).save();
+    }
 
     // Trigger Notification alerts
-    await Notification.create({
-      user: studentId as any,
-      title: `Earned +${amount} XP!`,
-      message: `XP awarded for: ${reason}`,
-      type: 'achievement',
-    });
-
-    if (leveledUp) {
+    if (global.isMockDb) {
+      mockNotifications.push({
+        _id: `not-${Date.now()}`,
+        user: studentId,
+        title: `Earned +${amount} XP!`,
+        message: `XP awarded for: ${reason}`,
+        type: 'achievement',
+        isRead: false,
+        createdAt: new Date()
+      });
+    } else {
       await Notification.create({
         user: studentId as any,
-        title: `🎉 Leveled Up to Level ${newLevel}!`,
-        message: `Congratulations! You've achieved a new architectural milestone!`,
+        title: `Earned +${amount} XP!`,
+        message: `XP awarded for: ${reason}`,
         type: 'achievement',
       });
+    }
+
+    if (leveledUp) {
+      if (global.isMockDb) {
+        mockNotifications.push({
+          _id: `not-${Date.now()}-lvl`,
+          user: studentId,
+          title: `🎉 Leveled Up to Level ${newLevel}!`,
+          message: `Congratulations! You've achieved a new architectural milestone!`,
+          type: 'achievement',
+          isRead: false,
+          createdAt: new Date()
+        });
+      } else {
+        await Notification.create({
+          user: studentId as any,
+          title: `🎉 Leveled Up to Level ${newLevel}!`,
+          message: `Congratulations! You've achieved a new architectural milestone!`,
+          type: 'achievement',
+        });
+      }
       
       // Auto unlock level badge milestones
       await this.unlockBadge(studentId, `level-${newLevel}`, `Level ${newLevel} Specialist`);
@@ -86,8 +132,10 @@ export class GamificationService {
       // If active today (diffDays === 0), keep current streak unchanged
     }
 
-    progress.lastActiveDate = new Date();
-    await progress.save();
+     progress.lastActiveDate = new Date();
+    if (!global.isMockDb) {
+      await (progress as any).save();
+    }
 
     // Unlock streak badges
     if (progress.currentStreak === 3) {
@@ -110,15 +158,28 @@ export class GamificationService {
         title,
         unlockedAt: new Date(),
       });
-      await progress.save();
+      
+      if (global.isMockDb) {
+        mockNotifications.push({
+          _id: `not-${Date.now()}-badge`,
+          user: studentId,
+          title: `🏆 Badge Unlocked: ${title}`,
+          message: `You earned the "${title}" badge! View your showcase in the dashboard.`,
+          type: 'achievement',
+          isRead: false,
+          createdAt: new Date()
+        });
+      } else {
+        await (progress as any).save();
 
-      // Trigger Dispatch Notification
-      await Notification.create({
-        user: studentId as any,
-        title: `🏆 Badge Unlocked: ${title}`,
-        message: `You earned the "${title}" badge! View your showcase in the dashboard.`,
-        type: 'achievement',
-      });
+        // Trigger Dispatch Notification
+        await Notification.create({
+          user: studentId as any,
+          title: `🏆 Badge Unlocked: ${title}`,
+          message: `You earned the "${title}" badge! View your showcase in the dashboard.`,
+          type: 'achievement',
+        });
+      }
     }
 
     return progress;

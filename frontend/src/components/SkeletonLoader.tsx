@@ -18,13 +18,12 @@ export const CourseCardSkeleton = () => {
         {/* Divider */}
         <div className="border-t border-slate-100 dark:border-slate-800/80 my-4" />
         
-        {/* Author / Price */}
+        {/* Author */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="h-7 w-7 bg-slate-200 dark:bg-slate-800 rounded-full" />
             <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-16" />
           </div>
-          <div className="h-5 bg-slate-200 dark:bg-slate-800 rounded w-12" />
         </div>
       </div>
     </div>

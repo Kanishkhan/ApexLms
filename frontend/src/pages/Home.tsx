@@ -29,7 +29,6 @@ import { pageVariants, staggerContainer, cardVariants } from '../animations/vari
 
 export default function Home() {
   const [activePreviewTrack, setActivePreviewTrack] = useState<'architecture' | 'frontend' | 'cloud'>('architecture');
-  const [selectedTreeNode, setSelectedTreeNode] = useState<number>(2); // Default to JS Node
   
   // Daily challenge mock playground code execution state
   const [mockCode, setMockCode] = useState(`function calculateFactorial(num) {
@@ -82,15 +81,7 @@ export default function Home() {
     }
   };
 
-  // Visual Duolingo Skill Tree Path Nodes list
-  const skillTreeNodes = [
-    { id: 0, label: 'HTML & CSS Basics', status: 'completed', desc: 'Symmetric typography grids, flexbox coordinates, and strict CSS overrides.', xp: 200 },
-    { id: 1, label: 'Advanced JS & Arrays', status: 'completed', desc: 'Functional array mappings, asynchronous event loops, and mock repositories.', xp: 350 },
-    { id: 2, label: 'React State Hooks', status: 'active', desc: 'Dynamic state synchronization, Redux slices, and high-fidelity components.', xp: 500 },
-    { id: 3, label: 'Node.js REST Controllers', status: 'locked', desc: 'Secure express pipelines, repository injections, and Zod assertions.', xp: 600 },
-    { id: 4, label: 'MongoDB Cluster Seeds', status: 'locked', desc: 'Mongoose schema validation schemas, cluster indexing, and whitelists.', xp: 800 },
-    { id: 5, label: 'Final Capstone Project', status: 'locked', desc: 'Venture-grade product deliverables matching strict rubric checklists.', xp: 1200 }
-  ];
+
 
   const handleRunMockSandbox = () => {
     setIsPlaying(true);
@@ -242,114 +233,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* SECTION 2: Duolingo-Style Interactive Skill Tree Preview (WOW FACTOR) */}
-      <section className="py-20 px-4 max-w-7xl mx-auto border-b border-slate-200 dark:border-slate-850">
-        <div className="text-center max-w-xl mx-auto space-y-3.5 mb-12">
-          <span className="inline-block px-3 py-1 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-wider">
-            Interactive Learning Sandbox
-          </span>
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            The Interactive Full-Stack Skill Tree
-          </h2>
-          <p className="text-xs text-slate-550 dark:text-slate-400 font-medium">
-            Coursera lists static videos. Apex LMS maps out engineering pathways as connected skill nodes. Click the visual nodes below to preview your full-stack journey:
-          </p>
-        </div>
-
-        {/* Visual Skill Node Map */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
-          {/* Node graph flowchart preview (Col 7) */}
-          <div className="lg:col-span-7 p-8 rounded-[2.5rem] border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-905 flex flex-col items-center space-y-8 relative overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-brand-500/5 rounded-full blur-3xl -z-10" />
-            
-            {/* Visual Skill Flow nodes */}
-            <div className="flex flex-col items-center space-y-12 relative w-full max-w-xs">
-              
-              {skillTreeNodes.map((node, index) => {
-                const isSelected = selectedTreeNode === node.id;
-                return (
-                  <div key={node.id} className="relative flex flex-col items-center w-full">
-                    {/* SVG Connector Line */}
-                    {index < skillTreeNodes.length - 1 && (
-                      <div className="absolute bottom-[-48px] w-[3px] h-[48px] bg-gradient-to-b from-slate-350 via-slate-200 to-slate-300 dark:from-slate-700 dark:via-slate-800 dark:to-slate-800" />
-                    )}
-
-                    {/* Node sphere */}
-                    <div 
-                      onClick={() => setSelectedTreeNode(node.id)}
-                      className={`skill-node ${
-                        node.status === 'completed' ? 'skill-node-completed' :
-                        node.status === 'active' ? 'skill-node-active' :
-                        'skill-node-locked'
-                      } ${isSelected ? 'ring-4 ring-indigo-500' : ''}`}
-                    >
-                      {node.status === 'completed' ? <Check className="h-6 w-6 stroke-[3.5]" /> : 
-                       node.status === 'active' ? <Play className="h-5 w-5 fill-current ml-0.5" /> : 
-                       <Lock className="h-5 w-5" />}
-                    </div>
-
-                    {/* Compact Label */}
-                    <span className="text-[10px] font-black uppercase mt-2 tracking-wide font-sans text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-900 border border-slate-250 dark:border-slate-800 px-2 py-0.5 rounded-md">
-                      {node.label}
-                    </span>
-                  </div>
-                );
-              })}
-
-            </div>
-          </div>
-
-          {/* Node detail display panel (Col 5) */}
-          <div className="lg:col-span-5 text-left">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedTreeNode}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
-                className="p-8 rounded-[2.5rem] border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-6 shadow-md"
-              >
-                <div>
-                  <span className={`text-[8px] font-black uppercase px-2.5 py-0.5 rounded-md border ${
-                    skillTreeNodes[selectedTreeNode].status === 'completed' ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' :
-                    skillTreeNodes[selectedTreeNode].status === 'active' ? 'text-indigo-650 bg-indigo-550/10 border-indigo-550/20' :
-                    'text-slate-450 bg-slate-100 dark:bg-slate-950 border-slate-250'
-                  }`}>
-                    {skillTreeNodes[selectedTreeNode].status.toUpperCase()}
-                  </span>
-                  
-                  <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mt-3 leading-snug">
-                    {skillTreeNodes[selectedTreeNode].label}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium leading-relaxed font-sans">
-                    {skillTreeNodes[selectedTreeNode].desc}
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/25 border border-slate-200 dark:border-slate-850 flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Trophy className="h-5 w-5 text-amber-500" />
-                    <div>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase">Lesson Reward Points</p>
-                      <p className="text-xs font-black text-slate-850 dark:text-white">+{skillTreeNodes[selectedTreeNode].xp} XP Gained</p>
-                    </div>
-                  </div>
-                  <Link 
-                    to="/register" 
-                    className="px-3.5 py-1.5 text-[9px] font-black text-white bg-indigo-650 hover:bg-indigo-600 rounded-lg transition-colors"
-                  >
-                    Start Track
-                  </Link>
-                </div>
-              </motion.div>
-            </AnimatePresence>
           </div>
 
         </div>

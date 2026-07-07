@@ -36,7 +36,7 @@ export default function StudentDashboard() {
   const navigate = useNavigate();
 
   // Tab navigation: 'syllabi' | 'paths' | 'analytics' | 'career' | 'challenges'
-  const [activeTab, setActiveTab] = useState<'syllabi' | 'paths' | 'analytics' | 'career' | 'challenges'>('syllabi');
+  const [activeTab, setActiveTab] = useState<'syllabi' | 'analytics' | 'challenges'>('syllabi');
   const [activePathTrack, setActivePathTrack] = useState<'frontend' | 'backend'>('frontend');
   
   const [metrics, setMetrics] = useState<any | null>(null);
@@ -228,9 +228,7 @@ ${achievements?.badges?.map((b: any) => `- **${b.title}** (Unlocked on ${new Dat
       <div className="flex flex-wrap border-b-2 border-slate-200 dark:border-slate-800 gap-1 pb-px">
         {[
           { id: 'syllabi', label: 'Active Syllabi', icon: BookOpen },
-          { id: 'paths', label: 'Interactive Skill Trees', icon: Code2 },
           { id: 'analytics', label: 'Telemetry Analytics', icon: Activity },
-          { id: 'career', label: 'Career & Portfolios', icon: Briefcase },
           { id: 'challenges', label: 'Daily Challenges', icon: Terminal }
         ].map((tab) => {
           const Icon = tab.icon;
@@ -411,95 +409,7 @@ ${achievements?.badges?.map((b: any) => `- **${b.title}** (Unlocked on ${new Dat
               </motion.div>
             )}
 
-            {/* Interactive Skill Trees Tab (Duolingo visual node flowchart) */}
-            {activeTab === 'paths' && (
-              <motion.div
-                key="paths"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.25 }}
-                className="glass-card p-6 sm:p-8 space-y-6 text-left"
-              >
-                <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
-                  <div className="flex items-center space-x-2">
-                    <Code2 className="h-5 w-5 text-brand-500 mr-1" />
-                    <h2 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">Visual Specialization Pathways</h2>
-                  </div>
-                  
-                  {/* Selector for FE / BE tree */}
-                  <div className="flex bg-slate-100 dark:bg-slate-950 p-1 border border-slate-300 dark:border-slate-850 rounded-xl">
-                    <button
-                      onClick={() => setActivePathTrack('frontend')}
-                      className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-colors ${
-                        activePathTrack === 'frontend' 
-                          ? 'bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 border border-slate-300 dark:border-slate-800 shadow-sm' 
-                          : 'text-slate-500 hover:text-slate-850'
-                      }`}
-                    >
-                      Frontend Tree
-                    </button>
-                    <button
-                      onClick={() => setActivePathTrack('backend')}
-                      className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase transition-colors ${
-                        activePathTrack === 'backend' 
-                          ? 'bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 border border-slate-300 dark:border-slate-800 shadow-sm' 
-                          : 'text-slate-500 hover:text-slate-850'
-                      }`}
-                    >
-                      Backend Tree
-                    </button>
-                  </div>
-                </div>
 
-                <p className="text-xs text-slate-500 dark:text-slate-405 leading-relaxed font-sans font-medium">
-                  Follow visual linked nodes inside this track. Completed nodes are marked with checkmarks. Click or hover on active nodes to start evaluations or assignments.
-                </p>
-
-                {/* Vertical visual node list linked with custom lines */}
-                <div className="py-8 flex flex-col items-center space-y-12 relative">
-                  
-                  {pathTracks[activePathTrack].map((node, index) => (
-                    <div key={node.id} className="relative flex flex-col items-center w-full max-w-sm">
-                      {/* SVG vertical line connector */}
-                      {index < pathTracks[activePathTrack].length - 1 && (
-                        <div className="absolute bottom-[-48px] w-[3px] h-[48px] bg-slate-300 dark:bg-slate-800" />
-                      )}
-
-                      {/* Visual Node */}
-                      <div className={`skill-node ${
-                        node.status === 'completed' ? 'skill-node-completed' :
-                        node.status === 'active' ? 'skill-node-active' :
-                        'skill-node-locked'
-                      } hover:scale-105`}>
-                        {node.status === 'completed' ? <Check className="h-6 w-6 stroke-[3.5]" /> :
-                         node.status === 'active' ? <PlayCircle className="h-6 w-6" /> :
-                         <Lock className="h-5 w-5" />}
-                      </div>
-
-                      {/* Information Popover Details */}
-                      <div className="mt-4 p-4.5 rounded-2xl border-2 border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 w-full text-left shadow-sm hover:border-brand-500/20 transition-all duration-300">
-                        <div className="flex items-center justify-between">
-                          <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${
-                            node.status === 'completed' ? 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20' :
-                            node.status === 'active' ? 'text-indigo-650 bg-indigo-500/10 border border-indigo-500/20' :
-                            'text-slate-400 bg-slate-100 dark:bg-slate-900 border border-slate-250 dark:border-slate-850'
-                          }`}>
-                            {node.status}
-                          </span>
-                          <span className="text-[9px] font-bold text-slate-400 font-mono tracking-wider uppercase">
-                            {node.type} • +{node.xp} XP
-                          </span>
-                        </div>
-                        <h4 className="text-xs font-black text-slate-900 dark:text-white mt-2 leading-tight">{node.label}</h4>
-                        <p className="text-[10px] text-slate-500 dark:text-slate-450 mt-1 leading-relaxed">{node.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-
-                </div>
-              </motion.div>
-            )}
 
             {/* Telemetry Analytics Tab */}
             {activeTab === 'analytics' && (
@@ -630,106 +540,6 @@ ${achievements?.badges?.map((b: any) => `- **${b.title}** (Unlocked on ${new Dat
                         );
                       })}
                     </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Career & Portfolios Tab */}
-            {activeTab === 'career' && (
-              <motion.div
-                key="career"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.25 }}
-                className="space-y-8 text-left"
-              >
-                {/* Portfolios Toggle checklist */}
-                <div className="glass-card p-6 sm:p-8 space-y-6">
-                  <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
-                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider flex items-center">
-                      <FolderGit2 className="h-5 w-5 text-indigo-500 mr-2" />
-                      <span>Deliverable Portfolios Highlights Console</span>
-                    </h3>
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest font-mono">PORTFOLIO_SELECT</span>
-                  </div>
-
-                  <p className="text-xs text-slate-555 dark:text-slate-405 leading-relaxed font-sans font-medium">
-                    Toggle which projects and assignments to showcase on your automatically generated recruiter-facing resume profile. Featured items link source repository directories.
-                  </p>
-
-                  <div className="space-y-3.5">
-                    {submissions.length === 0 ? (
-                      <p className="text-xs text-slate-400 font-sans text-center py-6">Submit homework outputs inside the courses player to feature portfolios.</p>
-                    ) : (
-                      submissions.map((sub: any) => {
-                        const isFeatured = featuredSubmissions.includes(sub._id);
-                        return (
-                          <div 
-                            key={sub._id}
-                            className={`p-4.5 rounded-2xl border-2 transition-all flex items-center justify-between gap-4 text-left ${
-                              isFeatured 
-                                ? 'bg-indigo-500/5 border-indigo-500/30' 
-                                : 'bg-slate-50/50 dark:bg-slate-950/20 border-slate-300 dark:border-slate-850'
-                            }`}
-                          >
-                            <div className="overflow-hidden">
-                              <h4 className="text-xs font-black text-slate-850 dark:text-white truncate">{sub.assignment?.title}</h4>
-                              <div className="flex items-center space-x-3 text-[9px] font-bold text-slate-450 mt-1 font-mono">
-                                <span>SCORE: {sub.pointsEarned || 0} / {sub.assignment?.maxPoints || 100} PTS</span>
-                                {sub.githubUrl && <span className="truncate max-w-[180px]">URL: {sub.githubUrl}</span>}
-                              </div>
-                            </div>
-
-                            <button
-                              onClick={() => toggleFeaturedSubmission(sub._id)}
-                              className={`px-3.5 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${
-                                isFeatured
-                                  ? 'bg-indigo-650 text-white border border-indigo-700 shadow-sm'
-                                  : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-350 border border-slate-300 dark:border-slate-800'
-                              }`}
-                            >
-                              {isFeatured ? '✓ Featured' : 'Feature'}
-                            </button>
-                          </div>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-
-                {/* Markdown Recruiter Resume compiler Card */}
-                <div className="glass-card p-6 sm:p-8 space-y-6">
-                  <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
-                    <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider flex items-center">
-                      <FileText className="h-5 w-5 text-indigo-550 mr-2" />
-                      <span>Interactive markdown Resume Compiler</span>
-                    </h3>
-                    
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={handleCopyResumeMarkdown}
-                        className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-850 dark:bg-slate-800 dark:hover:bg-slate-750 text-white rounded-xl text-[10px] font-black uppercase transition-all flex items-center space-x-1"
-                        title="Copy Markdown to Clipboard"
-                      >
-                        <Copy className="h-3.5 w-3.5" />
-                        <span>{copiedResume ? 'Copied!' : 'Copy Markdown'}</span>
-                      </button>
-                      <button
-                        onClick={() => window.print()}
-                        className="px-3.5 py-1.5 bg-indigo-650 hover:bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase transition-all flex items-center space-x-1"
-                        title="Export profile resume to PDF"
-                      >
-                        <Printer className="h-3.5 w-3.5" />
-                        <span>Export PDF</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Rendered dynamic compiler resume */}
-                  <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 text-[11px] font-mono text-slate-300 overflow-y-auto max-h-[380px] text-left leading-relaxed whitespace-pre-wrap select-text scrollbar-dark">
-                    {generateResumeMarkdown()}
                   </div>
                 </div>
               </motion.div>

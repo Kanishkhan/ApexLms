@@ -4,6 +4,8 @@ dotenv.config();
 
 import app from './app';
 import { connectDB } from './config/db';
+import { seedDemoData } from './config/seeder';
+import { initializeSocket } from './services/socketService';
 
 const PORT = process.env.PORT || 5000;
 
@@ -11,12 +13,18 @@ const startServer = async () => {
   // Connect database
   await connectDB();
 
+  // Seed demo data (idempotent - safe to run on every restart)
+  await seedDemoData();
+
   const server = app.listen(PORT, () => {
     console.log('==================================================');
     console.log(`🚀 LMS Server is running in ${process.env.NODE_ENV || 'development'} mode`);
     console.log(`🔌 Listening on http://localhost:${PORT}`);
     console.log('==================================================');
   });
+
+  // Initialize WebSockets
+  initializeSocket(server);
 
   // Handle graceful shutdowns
   const shutdown = () => {
