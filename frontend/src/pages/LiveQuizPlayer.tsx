@@ -110,7 +110,7 @@ export default function LiveQuizPlayer() {
       }
     });
 
-    socket.on('leaderboard', ({ leaderboard, answersReceived }) => {
+    socket.on('leaderboard', ({ leaderboard }) => {
       setLeaderboard(leaderboard);
       setStatus('leaderboard');
     });
@@ -151,7 +151,7 @@ export default function LiveQuizPlayer() {
     setErrorMsg('');
     socketRef.current?.emit('host_create_room', {
       quizId: selectedQuizId,
-      userId: user?._id
+      userId: user?.id
     });
   };
 
@@ -165,7 +165,7 @@ export default function LiveQuizPlayer() {
     setErrorMsg('');
     socketRef.current?.emit('student_join_room', {
       roomCode: inputCode.toUpperCase().trim(),
-      userId: user?._id,
+      userId: user?.id,
       username: user?.name || 'Student'
     });
     setRoomCode(inputCode.toUpperCase().trim());
@@ -219,7 +219,7 @@ export default function LiveQuizPlayer() {
     setHasAnswered(true);
     socketRef.current?.emit('student_submit_answer', {
       roomCode,
-      userId: user?._id,
+      userId: user?.id,
       answerValues: answersList,
       timeTaken: Math.min(timeRemaining, timeTaken)
     });
