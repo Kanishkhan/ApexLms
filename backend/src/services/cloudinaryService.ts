@@ -48,8 +48,7 @@ export class CloudinaryService {
 
         fs.writeFileSync(filePath, fileBuffer);
 
-        const port = process.env.PORT || 5000;
-        return `http://localhost:${port}/uploads/${fileName}`;
+        return `/uploads/${fileName}`;
       } catch (err) {
         console.error('Local upload failed, falling back to mock link: ', err);
         // Fallback to mock assets if file writing fails
