@@ -198,7 +198,6 @@ export default function Login() {
               )}
             </button>
           </form>
-        </div>>
         </div>
 
         <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-450 px-4">
