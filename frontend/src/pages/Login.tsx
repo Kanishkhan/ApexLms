@@ -15,7 +15,8 @@ import {
   Moon, 
   Sparkles,
   ShieldCheck,
-  Server
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { pageVariants } from '../animations/variants';
@@ -29,14 +30,34 @@ export default function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [validationError, setValidationError] = useState('');
+
+  const validateForm = (): boolean => {
+    if (!email || !password) {
+      setValidationError('Please specify both your email address and password.');
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setValidationError('Please enter a valid email address format.');
+      return false;
+    }
+
+    if (password.length < 6) {
+      setValidationError('Password must be at least 6 characters long.');
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError('');
 
-    if (!email || !password) {
-      setValidationError('Please specify both your email address and password.');
+    if (!validateForm()) {
       return;
     }
 
@@ -63,6 +84,7 @@ export default function Login() {
   const handleAutoFill = (demoEmail: string) => {
     setEmail(demoEmail);
     setPassword('password');
+    setValidationError('');
   };
 
   return (
@@ -126,13 +148,24 @@ export default function Login() {
                   <Lock className="h-4 w-4 shrink-0" />
                 </span>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-250 dark:border-slate-800/80 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white"
+                  className="w-full pl-10 pr-10 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-250 dark:border-slate-800/80 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4.5 w-4.5 shrink-0" />
+                  ) : (
+                    <Eye className="h-4.5 w-4.5 shrink-0" />
+                  )}
+                </button>
               </div>
             </div>
 
