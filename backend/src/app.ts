@@ -24,6 +24,9 @@ import dailyQuizRoutes from './routes/dailyQuizRoutes';
 
 const app = express();
 
+// Trust proxy for rate limiting behind Render/Railway proxy layers
+app.set('trust proxy', 1);
+
 // Security Middlewares
 app.use(
   helmet({
