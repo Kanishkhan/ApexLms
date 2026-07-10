@@ -15,7 +15,9 @@ import {
   Sparkles,
   ShieldCheck,
   Sun,
-  Moon
+  Moon,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { pageVariants } from '../animations/variants';
@@ -29,6 +31,7 @@ export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<'student' | 'instructor'>('student');
   const [validationError, setValidationError] = useState('');
 
@@ -39,6 +42,12 @@ export default function Register() {
 
     if (!name || !email || !password) {
       setValidationError('Please fill in all details');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setValidationError('Please enter a valid email address format.');
       return;
     }
 
@@ -140,13 +149,24 @@ export default function Register() {
                   <Lock className="h-4 w-4 shrink-0" />
                 </span>
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-250 dark:border-slate-800/80 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white"
+                  className="w-full pl-10 pr-10 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-250 dark:border-slate-800/80 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4.5 w-4.5 shrink-0" />
+                  ) : (
+                    <Eye className="h-4.5 w-4.5 shrink-0" />
+                  )}
+                </button>
               </div>
             </div>
 

@@ -28,9 +28,10 @@ export default function Login() {
   const { loading, error } = useSelector((state: RootState) => state.auth);
   const { darkMode } = useSelector((state: RootState) => state.ui);
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(localStorage.getItem('rememberedEmail') || '');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(!!localStorage.getItem('rememberedEmail'));
   const [validationError, setValidationError] = useState('');
 
   const validateForm = (): boolean => {
@@ -61,6 +62,12 @@ export default function Login() {
       return;
     }
 
+    if (rememberMe) {
+      localStorage.setItem('rememberedEmail', email);
+    } else {
+      localStorage.removeItem('rememberedEmail');
+    }
+
     dispatch(authStart());
     try {
       const res = await authService.login({ email, password });
@@ -81,11 +88,7 @@ export default function Login() {
     }
   };
 
-  const handleAutoFill = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword('password');
-    setValidationError('');
-  };
+
 
   return (
     <motion.div
@@ -167,6 +170,17 @@ export default function Login() {
                   )}
                 </button>
               </div>
+                {/* Remember Me Checkbox */}
+            <div className="flex items-center text-left py-1">
+              <label className="flex items-center space-x-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="rounded border-slate-350 text-brand-600 focus:ring-brand-500 h-3.5 w-3.5"
+                />
+                <span className="text-[11px] font-bold text-slate-550 dark:text-slate-355">Remember my email</span>
+              </label>
             </div>
 
             <button
@@ -184,35 +198,7 @@ export default function Login() {
               )}
             </button>
           </form>
-
-          {/* Recruiter Quick Access Accounts - Highly Visual and Polished */}
-          <div className="border-t border-slate-200/50 dark:border-slate-800/60 pt-5 space-y-3 text-left">
-            <div className="flex items-center justify-between">
-              <p className="text-[9px] font-black text-slate-400 dark:text-slate-550 uppercase tracking-widest flex items-center">
-                <Sparkles className="w-3.5 h-3.5 mr-1 text-brand-500 animate-pulse" />
-                <span>Demo Evaluation Sandboxes</span>
-              </p>
-              <span className="text-[8px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider font-mono bg-slate-100 dark:bg-slate-950 px-2 py-0.5 rounded">Quick Access</span>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2.5">
-              {[
-                { role: 'Student', email: 'student@lms.com', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/10' },
-                { role: 'Instructor', email: 'instructor@lms.com', color: 'text-brand-500 bg-brand-500/10 border-brand-500/10' },
-                { role: 'Admin', email: 'admin@lms.com', color: 'text-purple-500 bg-purple-500/10 border-purple-500/10' }
-              ].map((item, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handleAutoFill(item.email)}
-                  className={`flex flex-col items-center justify-center p-2 rounded-xl border hover:shadow-sm hover:-translate-y-0.5 transition-all duration-300 font-sans group ${item.color}`}
-                >
-                  <UserCheck className="h-4 w-4 group-hover:scale-105 transition-transform" />
-                  <span className="text-[9px] font-bold mt-1.5 uppercase tracking-wide">{item.role}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+        </div>>
         </div>
 
         <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-450 px-4">
