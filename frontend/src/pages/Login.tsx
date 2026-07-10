@@ -170,7 +170,9 @@ export default function Login() {
                   )}
                 </button>
               </div>
-                {/* Remember Me Checkbox */}
+            </div>
+
+            {/* Remember Me Checkbox */}
             <div className="flex items-center text-left py-1">
               <label className="flex items-center space-x-2 cursor-pointer select-none">
                 <input
