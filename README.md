@@ -8,7 +8,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
-An enterprise-grade, modern, and production-ready Learning Management System (LMS) designed with a clean SaaS/EdTech aesthetic (inspired by Stripe, Linear, and Vercel). Features a scalable repository-service architectural pattern, JWT access + refresh token rotating sessions, rich multimedia syllabus players, interactive quiz engines, and real-time dashboard analytics.
+An enterprise-grade, modern, and production-ready Learning Management System (LMS) designed with a clean, modern SaaS/EdTech aesthetic (inspired by Stripe, Linear, and Vercel). Features a scalable repository-service architectural pattern, JWT access + refresh token rotating sessions, rich multimedia syllabus players, interactive quiz engines, and real-time dashboard analytics.
 
 ---
 
